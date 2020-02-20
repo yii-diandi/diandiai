@@ -2,7 +2,7 @@
     "name": "yii-diandi/diandiai",
     "description": "baidu pulic ai php sdk",
     "authors": [{
-        "name": "baidu"
+        "name": "wangchunsheng"
     }],
     "license": "Apache-2.0",
     "require": {
