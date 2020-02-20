@@ -23,7 +23,7 @@
             "AipSpeech.php"
         ],
         "psr-4": {
-            "diandiai": ""
+            "diandi/diandiai": ""
         }
     }
 }
