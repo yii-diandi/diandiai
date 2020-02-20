@@ -16,8 +16,8 @@
 */
 namespace diandi\diandiai\lib;
 
-use diandi\diandiai\lib\AipHttpClient;
-use diandi\diandiai\lib\AipBCEUtil;
+use AipHttpClient;
+use AipBCEUtil;
 
 /**
  * Aip Base 基类
