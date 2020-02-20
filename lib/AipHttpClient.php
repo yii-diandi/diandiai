@@ -18,7 +18,7 @@
 /**
  * Http Client
  */
-namespace diandiai\lib;
+namespace diandi\diandiai\lib;
 
 class AipHttpClient
 {

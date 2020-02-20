@@ -18,7 +18,7 @@
 /**
  * BCE Util
  */
-namespace diandiai\lib;
+namespace diandi\diandiai\lib;
 
 class AipHttpUtil
 {

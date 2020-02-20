@@ -14,7 +14,7 @@
 * License for the specific language governing permissions and limitations under
 * the License.
 */
-namespace diandiai\lib;
+namespace diandi\diandiai\lib;
 
 use diandiai\lib\AipHttpClient;
 use diandiai\lib\AipBCEUtil;
