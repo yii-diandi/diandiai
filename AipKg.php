@@ -15,7 +15,7 @@
 * the License.
 */
 namespace diandi\diandiai;
-use diandiai\lib\AipBase;
+use diandi\diandiai\lib\AipBase;
 
 class AipKg extends AipBase {
 

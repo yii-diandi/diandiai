@@ -16,7 +16,7 @@
 */
 namespace diandi\diandiai;
 
-use diandiai\AipImageCensor;
+use diandi\diandiai\AipImageCensor;
 
 /**
  * 内容审核
