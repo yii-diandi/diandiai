@@ -1,4 +1,11 @@
 <?php
+/**
+ * @Author: Wang chunsheng  email:2192138785@qq.com
+ * @Date:   2020-09-18 11:54:45
+ * @Last Modified by:   Wang chunsheng  email:2192138785@qq.com
+ * @Last Modified time: 2020-09-18 11:56:30
+ */
+ 
 /*
 * Copyright (c) 2017 Baidu.com, Inc. All Rights Reserved
 *
@@ -16,8 +23,6 @@
 */
 namespace diandi\diandiai\lib;
 
-use AipHttpClient;
-use AipBCEUtil;
 
 /**
  * Aip Base 基类
