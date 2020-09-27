@@ -3,7 +3,7 @@
  * @Author: Wang chunsheng  email:2192138785@qq.com
  * @Date:   2020-09-27 15:05:38
  * @Last Modified by:   Wang chunsheng  email:2192138785@qq.com
- * @Last Modified time: 2020-09-27 15:11:15
+ * @Last Modified time: 2020-09-27 16:20:42
  */
  
 /*
@@ -168,14 +168,14 @@ class AipHttpClient
         return $result;
     }
 
-    /**
+       /**
      * @param  string $url
      * @param  array $datas HTTP POST BODY
      * @param  array $param HTTP URL
      * @param  array $headers HTTP header
      * @return array
      */
-    public function multi_put($url, $datas=array(), $params=array(), $headers=array())
+    public function multi_put($url, $datas, $params=array(), $headers=array())
     {
         $url = $this->buildUrl($url, $params);
         $headers = array_merge($this->headers, $this->buildHeaders($headers));
