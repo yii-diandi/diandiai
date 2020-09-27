@@ -1,4 +1,11 @@
 <?php
+/**
+ * @Author: Wang chunsheng  email:2192138785@qq.com
+ * @Date:   2020-09-27 15:05:38
+ * @Last Modified by:   Wang chunsheng  email:2192138785@qq.com
+ * @Last Modified time: 2020-09-27 15:11:15
+ */
+ 
 /*
 * Copyright (c) 2017 Baidu.com, Inc. All Rights Reserved
 *
@@ -130,6 +137,58 @@ class AipHttpClient
             $chs[] = $ch;
             $this->prepare($ch);
             curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_HEADER, false);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, is_array($data) ? http_build_query($data) : $data);
+            curl_setopt($ch, CURLOPT_TIMEOUT_MS, $this->socketTimeout);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT_MS, $this->connectTimeout);
+            curl_multi_add_handle($mh, $ch);
+        }
+
+        $running = null;
+        do {
+            curl_multi_exec($mh, $running);
+            usleep(100);
+        } while ($running);
+
+        foreach ($chs as $ch) {
+            $content = curl_multi_getcontent($ch);
+            $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $result[] = array(
+                'code' => $code,
+                'content' => $content,
+            );
+            curl_multi_remove_handle($mh, $ch);
+        }
+        curl_multi_close($mh);
+        
+        return $result;
+    }
+
+       /**
+     * @param  string $url
+     * @param  array $datas HTTP POST BODY
+     * @param  array $param HTTP URL
+     * @param  array $headers HTTP header
+     * @return array
+     */
+    public function multi_put($url, $datas=array(), $params=array(), $headers=array())
+    {
+        $url = $this->buildUrl($url, $params);
+        $headers = array_merge($this->headers, $this->buildHeaders($headers));
+
+        $chs = array();
+        $result = array();
+        $mh = curl_multi_init();
+        foreach ($datas as $data) {
+            $ch = curl_init();
+            $chs[] = $ch;
+            $this->prepare($ch);
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "put"); //定义请求类型，当然那个提交类型那一句就不需要了
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_HEADER, false);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
