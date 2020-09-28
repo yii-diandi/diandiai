@@ -3,7 +3,7 @@
  * @Author: Wang chunsheng  email:2192138785@qq.com
  * @Date:   2020-09-27 15:05:38
  * @Last Modified by:   Wang chunsheng  email:2192138785@qq.com
- * @Last Modified time: 2020-09-27 16:32:11
+ * @Last Modified time: 2020-09-28 10:41:39
  */
  
 /*
@@ -179,45 +179,25 @@ class AipHttpClient
     {
         $url = $this->buildUrl($url, $params);
         $headers = array_merge($this->headers, $this->buildHeaders($headers));
-
         $chs = array();
         $result = array();
         $mh = curl_multi_init();
-        if(is_array($datas)){
-            foreach ($datas as $data) {
-                $ch = curl_init();
-                $chs[] = $ch;
-                $this->prepare($ch);
-                curl_setopt($ch, CURLOPT_URL, $url);
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "put"); //定义请求类型，当然那个提交类型那一句就不需要了
-                curl_setopt($ch, CURLOPT_POST, 1);
-                curl_setopt($ch, CURLOPT_HEADER, false);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, is_array($data) ? http_build_query($data) : $data);
-                curl_setopt($ch, CURLOPT_TIMEOUT_MS, $this->socketTimeout);
-                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT_MS, $this->connectTimeout);
-                curl_multi_add_handle($mh, $ch);
-            }
-        }else{
-            $ch = curl_init();
-            $chs[] = $ch;
-            $this->prepare($ch);
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "put"); //定义请求类型，当然那个提交类型那一句就不需要了
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_HEADER, false);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_POSTFIELDS,$datas);
-            curl_setopt($ch, CURLOPT_TIMEOUT_MS, $this->socketTimeout);
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT_MS, $this->connectTimeout);
-            curl_multi_add_handle($mh, $ch);
-        }
-       
-
+		//备份
+		$ch = curl_init();
+        $chs[] = $ch;
+        $this->prepare($ch);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "put"); //定义请求类型，当然那个提交类型那一句就不需要了
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        // curl_setopt($ch, CURLOPT_POSTFIELDS, is_array($datas) ? json_encode($datas) : $datas);
+        curl_setopt($ch, CURLOPT_POSTFIELDS,$datas);
+        curl_setopt($ch, CURLOPT_TIMEOUT_MS, $this->socketTimeout);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT_MS, $this->connectTimeout);
+        curl_multi_add_handle($mh, $ch);
+          
         $running = null;
         do {
             curl_multi_exec($mh, $running);
@@ -234,7 +214,6 @@ class AipHttpClient
             curl_multi_remove_handle($mh, $ch);
         }
         curl_multi_close($mh);
-        
         return $result;
     }
 
