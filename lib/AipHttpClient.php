@@ -3,9 +3,9 @@
  * @Author: Wang chunsheng  email:2192138785@qq.com
  * @Date:   2020-09-27 15:05:38
  * @Last Modified by:   Wang chunsheng  email:2192138785@qq.com
- * @Last Modified time: 2020-09-28 10:41:39
+ * @Last Modified time: 2020-09-29 10:23:12
  */
- 
+
 /*
 * Copyright (c) 2017 Baidu.com, Inc. All Rights Reserved
 *
@@ -23,27 +23,29 @@
 */
 
 /**
- * Http Client
+ * Http Client.
  */
+
 namespace diandi\diandiai\lib;
 
 class AipHttpClient
 {
-
     /**
-     * HttpClient
+     * HttpClient.
+     *
      * @param array $headers HTTP header
      */
-    public function __construct($headers=array())
+    public function __construct($headers = [])
     {
         $this->headers = $this->buildHeaders($headers);
         $this->connectTimeout = 60000;
         $this->socketTimeout = 60000;
-        $this->conf = array();
+        $this->conf = [];
     }
 
     /**
-     * 连接超时
+     * 连接超时.
+     *
      * @param int $ms 毫秒
      */
     public function setConnectionTimeoutInMillis($ms)
@@ -52,7 +54,8 @@ class AipHttpClient
     }
 
     /**
-     * 响应超时
+     * 响应超时.
+     *
      * @param int $ms 毫秒
      */
     public function setSocketTimeoutInMillis($ms)
@@ -61,7 +64,8 @@ class AipHttpClient
     }
 
     /**
-     * 配置
+     * 配置.
+     *
      * @param array $conf
      */
     public function setConf($conf)
@@ -70,7 +74,8 @@ class AipHttpClient
     }
 
     /**
-     * 请求预处理
+     * 请求预处理.
+     *
      * @param resource $ch
      */
     public function prepare($ch)
@@ -81,13 +86,13 @@ class AipHttpClient
     }
 
     /**
-     * @param  string $url
-     * @param  array $data HTTP POST BODY
-     * @param  array $param HTTP URL
-     * @param  array $headers HTTP header
+     * @param string $url
+     * @param array  $data    HTTP POST BODY
+     * @param array  $headers HTTP header
+     *
      * @return array
      */
-    public function post($url, $data=array(), $params=array(), $headers=array())
+    public function post($url, $data = [], $params = [], $headers = [])
     {
         $url = $this->buildUrl($url, $params);
         $headers = array_merge($this->headers, $this->buildHeaders($headers));
@@ -111,26 +116,27 @@ class AipHttpClient
         }
 
         curl_close($ch);
-        return array(
+
+        return [
             'code' => $code,
             'content' => $content,
-        );
+        ];
     }
 
     /**
-     * @param  string $url
-     * @param  array $datas HTTP POST BODY
-     * @param  array $param HTTP URL
-     * @param  array $headers HTTP header
+     * @param string $url
+     * @param array  $datas   HTTP POST BODY
+     * @param array  $headers HTTP header
+     *
      * @return array
      */
-    public function multi_post($url, $datas=array(), $params=array(), $headers=array())
+    public function multi_post($url, $datas = [], $params = [], $headers = [])
     {
         $url = $this->buildUrl($url, $params);
         $headers = array_merge($this->headers, $this->buildHeaders($headers));
 
-        $chs = array();
-        $result = array();
+        $chs = [];
+        $result = [];
         $mh = curl_multi_init();
         foreach ($datas as $data) {
             $ch = curl_init();
@@ -157,47 +163,53 @@ class AipHttpClient
         foreach ($chs as $ch) {
             $content = curl_multi_getcontent($ch);
             $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            $result[] = array(
+            $result[] = [
                 'code' => $code,
                 'content' => $content,
-            );
+            ];
             curl_multi_remove_handle($mh, $ch);
         }
         curl_multi_close($mh);
-        
+
         return $result;
     }
 
-       /**
-     * @param  string $url
-     * @param  array $datas HTTP POST BODY
-     * @param  array $param HTTP URL
-     * @param  array $headers HTTP header
+    /**
+     * @param string $url
+     * @param array  $datas   HTTP POST BODY
+     * @param array  $headers HTTP header
+     *
      * @return array
      */
-    public function multi_put($url, $datas, $params=array(), $headers=array())
+    public function multi_put($url, $datas, $params = [], $headers = [])
     {
         $url = $this->buildUrl($url, $params);
         $headers = array_merge($this->headers, $this->buildHeaders($headers));
-        $chs = array();
-        $result = array();
+
+        $chs = [];
+        $result = [];
         $mh = curl_multi_init();
-		//备份
-		$ch = curl_init();
+        //备份
+        $ch = curl_init();
         $chs[] = $ch;
         $this->prepare($ch);
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "put"); //定义请求类型，当然那个提交类型那一句就不需要了
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT'); //定义请求类型，当然那个提交类型那一句就不需要了
+
+        curl_setopt($ch, CURLOPT_PUT, true);
+        // curl_setopt($ch,CURLOPT_POST, true);
+
         curl_setopt($ch, CURLOPT_HEADER, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLINFO_HEADER_OUT, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        // curl_setopt($ch, CURLOPT_POSTFIELDS, is_array($datas) ? json_encode($datas) : $datas);
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$datas);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, is_array($datas) ? http_build_query($datas) : $datas);
+        // curl_setopt($ch, CURLOPT_POSTFIELDS,$datas);
         curl_setopt($ch, CURLOPT_TIMEOUT_MS, $this->socketTimeout);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT_MS, $this->connectTimeout);
         curl_multi_add_handle($mh, $ch);
-          
+
         $running = null;
         do {
             curl_multi_exec($mh, $running);
@@ -207,23 +219,24 @@ class AipHttpClient
         foreach ($chs as $ch) {
             $content = curl_multi_getcontent($ch);
             $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            $result[] = array(
+            $result[] = [
                 'code' => $code,
                 'content' => $content,
-            );
+            ];
             curl_multi_remove_handle($mh, $ch);
         }
         curl_multi_close($mh);
+
         return $result;
     }
 
     /**
-     * @param  string $url
-     * @param  array $param HTTP URL
-     * @param  array $headers HTTP header
+     * @param string $url
+     * @param array  $headers HTTP header
+     *
      * @return array
      */
-    public function get($url, $params=array(), $headers=array())
+    public function get($url, $params = [], $headers = [])
     {
         $url = $this->buildUrl($url, $params);
         $headers = array_merge($this->headers, $this->buildHeaders($headers));
@@ -243,39 +256,44 @@ class AipHttpClient
         if ($code === 0) {
             throw new \Exception(curl_error($ch));
         }
-        
+
         curl_close($ch);
-        return array(
+
+        return [
             'code' => $code,
             'content' => $content,
-        );
+        ];
     }
 
     /**
-     * 构造 header
-     * @param  array $headers
+     * 构造 header.
+     *
+     * @param array $headers
+     *
      * @return array
      */
     private function buildHeaders($headers)
     {
-        $result = array();
+        $result = [];
         foreach ($headers as $k => $v) {
             $result[] = sprintf('%s:%s', $k, $v);
         }
+
         return $result;
     }
 
     /**
+     * @param string $url
+     * @param array  $params 参数
      *
-     * @param  string $url
-     * @param  array $params 参数
      * @return string
      */
     private function buildUrl($url, $params)
     {
         if (!empty($params)) {
             $str = http_build_query($params);
-            return $url . (strpos($url, '?') === false ? '?' : '&') . $str;
+
+            return $url.(strpos($url, '?') === false ? '?' : '&').$str;
         } else {
             return $url;
         }
