@@ -185,7 +185,6 @@ class AipHttpClient
     {
         $url = $this->buildUrl($url, $params);
         $headers = array_merge($this->headers, $this->buildHeaders($headers));
-
         $chs = [];
         $result = [];
         $mh = curl_multi_init();
